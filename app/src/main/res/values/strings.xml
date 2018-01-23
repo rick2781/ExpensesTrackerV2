@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">ExpensesTrackerV2</string>
+
+    <!-- FirebaseDatabase Static Strings -->
+
+    <string name="bills">Bills</string>
+    <string name="grocery">Grocery</string>
+    <string name="month">Month</string>
+
+    <string name="payment_value">payment_value</string>
+    <string name="date">date</string>
+
+    <string name="ispaid">is_paid</string>
+
+    <!-- Activity Strings-->
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>
