@@ -24,13 +24,17 @@ import rick.expensestrackerv2.Utils.RecyclerAdapter;
  * Created by Rick on 1/21/2018.
  */
 
-public class MainActivityPresenter {
+public class MainActivityPresenter implements DataCallback {
 
     private static final String TAG = "MainActivityPresenter";
 
     static RecyclerAdapter recyclerAdapter;
 
+    DataCallback callback;
+//
     ArrayList<BillModel> bills = new ArrayList<>();
+
+    ArrayList<BillModel> userExpenses = new ArrayList<>();
 
     public MainActivityPresenter(RecyclerView recyclerView, Context context) {
 
@@ -38,6 +42,8 @@ public class MainActivityPresenter {
         Injection.getFirebaseDatabaseClassInstance().getDatabaseReferenceInstance();
 
         initData(context, recyclerView);
+
+        Injection.getFirebaseDatabaseClassInstance().initializeCallback(this);
     }
 
     public void initData(Context context, RecyclerView recyclerView) {
@@ -45,37 +51,28 @@ public class MainActivityPresenter {
         Hawk.init(context).build();
 
         BillModel bill1 = new BillModel("Energy", false);
-        BillModel bill2 = new BillModel("Car", true);
-        BillModel bill3 = new BillModel("Rent", false);
-        BillModel bill4 = new BillModel("Internet", true);
-        BillModel bill5 = new BillModel("Water", true);
+        BillModel bill2 = new BillModel("Car", false);
 
-        bills.add(bill1);
-        bills.add(bill2);
-        bills.add(bill3);
-        bills.add(bill4);
-        bills.add(bill5);
+        userExpenses.add(bill1);
+        userExpenses.add(bill2);
 
         //TODO FIRST CHANGE THIS WHOLE METHOD TO POPULATE THE LISTVIEW WITH DATA RETRIEVED FROM DATABASE THEN ADD DUMMY EVERYSINGLE NEW USER
 
-        ArrayList<BillModel> savedBillList;
+        Injection.getFirebaseDatabaseClassInstance().checkIsBillPaid(context, Injection.getDateInstance().getCurrentMonth());
 
-        if (Hawk.get("bills") != null) {
-
-            savedBillList = Hawk.get("bills");
-
-            for (BillModel savedBill : savedBillList) {
-                if (!bills.contains(savedBill)) {
-                    bills.add(savedBill);
-                }
-            }
-        }
-
-        Injection.getFirebaseDatabaseClassInstance().checkIsBillPaid(
-                Injection.getDateInstance().getCurrentMonth(),
-                bills,
-                context
-        );
+//        //TODO change to a not hard coded string here
+//        ArrayList<BillModel> savedExpenses;
+//
+//        savedExpenses = Hawk.get("userExpenses");
+//
+//        if (savedExpenses != null) {
+//            userExpenses.addAll(savedExpenses);
+//        }
+//        } else {
+//
+//            userExpenses.add(bill1);
+//            userExpenses.add(bill2);
+//        }
 
         recyclerAdapter = new RecyclerAdapter(bills, context);
 
@@ -83,6 +80,12 @@ public class MainActivityPresenter {
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerAdapter);
+
+    }
+
+    @Override
+    public ArrayList<BillModel> getData(ArrayList<BillModel> firebaseBills) {
+        return firebaseBills;
     }
 
     public void addNewBill(final Context context) {
@@ -102,18 +105,19 @@ public class MainActivityPresenter {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        BillModel bill = new BillModel(userInput.getText().toString(), false);
+                        BillModel userBill = new BillModel(userInput.getText().toString(), false);
 
-                        bills.add(bill);
+                        userExpenses.add(userBill);
+                        Log.d(TAG, "onClick: " + userExpenses.toString());
 
-                        Hawk.put("bills", bills);
+                        Hawk.put("userExpenses", userExpenses);
 
                         recyclerAdapter.notifyDataSetChanged();
 
                         Injection.getFirebaseDatabaseClassInstance().addBill(
                                 userInput.getText().toString(),
                                 Injection.getDateInstance().getCurrentMonth(),
-                                bill,
+                                userBill,
                                 context
                                 );
                     }

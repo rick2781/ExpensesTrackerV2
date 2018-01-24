@@ -15,8 +15,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import rick.expensestrackerv2.Domain.Model.BillModel;
+import rick.expensestrackerv2.Presentation.MainActvity.DataCallback;
 import rick.expensestrackerv2.R;
 
 /**
@@ -29,9 +31,10 @@ public class FirebaseDatabaseHelper {
 
     static FirebaseDatabaseHelper INSTANCE;
 
+    DataCallback callback;
+
     FirebaseDatabase firebaseDatabase;
     DatabaseReference myRef;
-
 
     public static FirebaseDatabaseHelper getDatabaseClassInstance() {
 
@@ -62,69 +65,54 @@ public class FirebaseDatabaseHelper {
 
     public void addBill(String billName, String month, BillModel bill, Context context) {
 
-        Hawk.init(context).build();
-
         myRef.child(context.getString(R.string.bills))
                 .child(billName)
-                .child(context.getString(R.string.month))
-                .child(month)
-                .setValue(bill);
-
-        Hawk.put(bill.getBillName(), bill);
+                .child(context.getString(R.string.month) + month)
+                .child("isPaid")
+                .setValue(false);
     }
 
-    public void payBill(String billName, String month, Context context) {
+    public void payBill(BillModel bill, String month, Context context) {
+
+//        BillModel paidBill = new BillModel(bill.getBillName(), true);
 
         myRef.child(context.getString(R.string.bills))
-                .child(billName)
-                .child(context.getString(R.string.month))
-                .child(month)
-                .child(context.getString(R.string.ispaid))
+                .child(bill.getBillName())
+                .child(context.getString(R.string.month) + month)
+                .child("isPaid")
                 .setValue(true);
 
     }
 
-    public void checkIsBillPaid(String month, final ArrayList<BillModel> bills, final Context context) {
+    public void checkIsBillPaid(final Context context, final String month) {
 
-        for (final BillModel bill : bills) {
+        myRef.child(context.getString(R.string.bills))
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-            myRef.child(context.getString(R.string.bills))
-                    .child(bill.getBillName())
-                    .child(context.getString(R.string.month))
-                    .child(month)
-                    .child(context.getString(R.string.ispaid))
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                        ArrayList<BillModel> firebaseBills = new ArrayList<>();
 
-                            Log.d(TAG, "onDataChange: datasnapshot " + dataSnapshot);
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-                            if (!dataSnapshot.exists()) {
+                            boolean isPaid = (boolean) data.child(context.getString(R.string.month) + month)
+                                    .child("isPaid")
+                                    .getValue();
 
-                                BillModel thisBill = new BillModel(bill.getBillName(), false);
+                            BillModel firebaseBill = new BillModel(data.getKey().toString(), isPaid);
 
-                                if (!bill.equals(thisBill)) {
-                                    bills.add(thisBill);
-                                }
-
-                            } else if (dataSnapshot.exists()) {
-
-                                BillModel thisBill = new BillModel(bill.getBillName(), true);
-
-                                if (!bill.equals(thisBill)) {
-                                    bills.add(thisBill);
-                                }
-                            }
-
-                            Hawk.put("bills", bills);
+                            firebaseBills.add(firebaseBill);
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                        callback.getData(firebaseBills);
 
-                        }
-                    });
-        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
 //    public void addGrocery(GroceryModel groceryModel, String month, String fullDate, Context context) {
@@ -173,5 +161,9 @@ public class FirebaseDatabaseHelper {
                     }
                 });
 
+    }
+
+    public void initializeCallback(DataCallback callback) {
+        this.callback = callback;
     }
 }

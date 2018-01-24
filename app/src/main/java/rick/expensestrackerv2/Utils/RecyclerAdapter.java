@@ -59,13 +59,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
             holder.iCheckBill.setImageResource(R.drawable.unpaidbill);
         }
-        
+
         holder.payBill.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+
                 Injection.getFirebaseDatabaseClassInstance().payBill(
-                        bills.getBillName(),
+                        bills,
                         Injection.getDateInstance().getCurrentMonth(),
                         mContext
                 );
