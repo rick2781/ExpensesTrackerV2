@@ -24,57 +24,29 @@ import rick.expensestrackerv2.Utils.RecyclerAdapter;
  * Created by Rick on 1/21/2018.
  */
 
-public class MainActivityPresenter implements DataCallback {
+public class MainActivityPresenter implements NotificationCallback {
 
     private static final String TAG = "MainActivityPresenter";
 
     static RecyclerAdapter recyclerAdapter;
 
-    DataCallback callback;
-//
     ArrayList<BillModel> bills = new ArrayList<>();
-
-    ArrayList<BillModel> userExpenses = new ArrayList<>();
 
     public MainActivityPresenter(RecyclerView recyclerView, Context context) {
 
         Injection.getFirebaseDatabaseClassInstance().getDatabaseInstance();
         Injection.getFirebaseDatabaseClassInstance().getDatabaseReferenceInstance();
 
-        initData(context, recyclerView);
-
         Injection.getFirebaseDatabaseClassInstance().initializeCallback(this);
+
+        initData(context, recyclerView);
     }
 
     public void initData(Context context, RecyclerView recyclerView) {
 
-        Hawk.init(context).build();
+        savedBills.removeAll(savedBills);
 
-        BillModel bill1 = new BillModel("Energy", false);
-        BillModel bill2 = new BillModel("Car", false);
-
-        userExpenses.add(bill1);
-        userExpenses.add(bill2);
-
-        //TODO FIRST CHANGE THIS WHOLE METHOD TO POPULATE THE LISTVIEW WITH DATA RETRIEVED FROM DATABASE THEN ADD DUMMY EVERYSINGLE NEW USER
-
-        Injection.getFirebaseDatabaseClassInstance().checkIsBillPaid(context, Injection.getDateInstance().getCurrentMonth());
-
-//        //TODO change to a not hard coded string here
-//        ArrayList<BillModel> savedExpenses;
-//
-//        savedExpenses = Hawk.get("userExpenses");
-//
-//        if (savedExpenses != null) {
-//            userExpenses.addAll(savedExpenses);
-//        }
-//        } else {
-//
-//            userExpenses.add(bill1);
-//            userExpenses.add(bill2);
-//        }
-
-        recyclerAdapter = new RecyclerAdapter(bills, context);
+        recyclerAdapter = new RecyclerAdapter(savedBills, context);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
 
@@ -84,8 +56,9 @@ public class MainActivityPresenter implements DataCallback {
     }
 
     @Override
-    public ArrayList<BillModel> getData(ArrayList<BillModel> firebaseBills) {
-        return firebaseBills;
+    public void notifyWhendone() {
+
+        recyclerAdapter.notifyDataSetChanged();
     }
 
     public void addNewBill(final Context context) {
@@ -105,21 +78,7 @@ public class MainActivityPresenter implements DataCallback {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        BillModel userBill = new BillModel(userInput.getText().toString(), false);
 
-                        userExpenses.add(userBill);
-                        Log.d(TAG, "onClick: " + userExpenses.toString());
-
-                        Hawk.put("userExpenses", userExpenses);
-
-                        recyclerAdapter.notifyDataSetChanged();
-
-                        Injection.getFirebaseDatabaseClassInstance().addBill(
-                                userInput.getText().toString(),
-                                Injection.getDateInstance().getCurrentMonth(),
-                                userBill,
-                                context
-                                );
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

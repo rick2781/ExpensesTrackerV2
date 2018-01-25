@@ -23,8 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     MainActivityPresenter presenter;
 
-    DataCallback callback;
-
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
@@ -39,14 +37,14 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-//        presenter = new MainActivityPresenter(recyclerView, this);
-//
-//        addBill.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                presenter.addNewBill(MainActivity.this);
-//            }
-//        });
+        presenter = new MainActivityPresenter(recyclerView, this);
+
+        addBill.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                presenter.addNewBill(MainActivity.this);
+            }
+        });
     }
 }

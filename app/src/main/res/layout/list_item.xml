@@ -50,7 +50,6 @@
         android:layout_toStartOf="@+id/payBill"
         android:src="@drawable/paidbill"
         app:layout_constraintEnd_toStartOf="@+id/payBill"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/billName"
         app:layout_constraintTop_toTopOf="parent" />
 

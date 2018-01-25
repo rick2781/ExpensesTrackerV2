@@ -40,6 +40,9 @@ dependencies {
     //Hawk
     compile 'com.orhanobut:hawk:2.0.1'
 
+    //RxJava
+    compile 'io.reactivex.rxjava2:rxjava:2.1.3'
+
 }
 
 

@@ -47,7 +47,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final BillModel bills = billModel.get(position);
 
         if (bills.getBillName() != null) {
@@ -71,6 +71,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 );
 
                 holder.iCheckBill.setImageResource(R.drawable.paidbill);
+            }
+        });
+
+        holder.deleteBill.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                remove(position);
             }
         });
     }
@@ -99,5 +106,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public void remove(int position) {
+        this.billModel.remove(position);
+        notifyItemRemoved(position);
     }
 }
