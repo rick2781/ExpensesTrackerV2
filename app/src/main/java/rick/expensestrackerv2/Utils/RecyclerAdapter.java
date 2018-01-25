@@ -32,11 +32,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private static final String TAG = "RecyclerAdapter";
 
     ArrayList<BillModel> billModel;
-    Context mContext;
 
-    public RecyclerAdapter(ArrayList<BillModel> billModel, Context mContext) {
+    public RecyclerAdapter(ArrayList<BillModel> billModel) {
         this.billModel = billModel;
-        this.mContext = mContext;
     }
 
     @Override

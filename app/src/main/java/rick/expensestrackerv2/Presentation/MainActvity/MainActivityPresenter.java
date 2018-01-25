@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,9 +13,6 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.orhanobut.hawk.Hawk;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -55,16 +51,18 @@ public class MainActivityPresenter implements NotificationCallback {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
 
-        bills.add(new BillModel("tesint", false));
-
         Gson gson = new Gson();
 
         String json = sharedPreferences.getString("bills", "");
 
         Type type = new TypeToken<ArrayList<BillModel>>(){}.getType();
-//        bills = gson.fromJson(json, type); the problem is here
+        ArrayList<BillModel> savedBills = gson.fromJson(json, type);
 
-        recyclerAdapter = new RecyclerAdapter(bills, context);
+        if (savedBills != null) {
+            bills.addAll(savedBills);
+        }
+
+        recyclerAdapter = new RecyclerAdapter(bills);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
 
@@ -130,21 +128,14 @@ public class MainActivityPresenter implements NotificationCallback {
         SharedPreferences sharedPreferences = context.getSharedPreferences("FirstTime", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        if (sharedPreferences.getBoolean("KeyFirstTime", false)) {
+        boolean firstRun = sharedPreferences.getBoolean("firstRun", true);
 
-            bills.add(new BillModel("sarradatest", true));
+        if (firstRun) {
 
-        } else {
+            bills.add(new BillModel("testingFirstRun", true));
+            Log.d(TAG, "checkFirstTime: testing this bitch 1");
 
-            Log.d(TAG, "checkFirstTime: testing this bitch");
-            setFirstTime(false);
+            editor.putBoolean("firstRun", false).apply();
         }
-
-    }
-
-    public void setFirstTime(boolean isFirst) {
-
-        editor.putBoolean("KeyFirstTime", isFirst);
-        editor.apply();
     }
 }
