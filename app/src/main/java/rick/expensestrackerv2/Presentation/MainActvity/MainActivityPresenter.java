@@ -3,6 +3,8 @@ package rick.expensestrackerv2.Presentation.MainActvity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,9 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import rick.expensestrackerv2.Domain.Model.BillModel;
@@ -30,6 +35,8 @@ public class MainActivityPresenter implements NotificationCallback {
 
     static RecyclerAdapter recyclerAdapter;
 
+    SharedPreferences.Editor editor;
+
     ArrayList<BillModel> bills = new ArrayList<>();
 
     public MainActivityPresenter(RecyclerView recyclerView, Context context) {
@@ -39,20 +46,30 @@ public class MainActivityPresenter implements NotificationCallback {
 
         Injection.getFirebaseDatabaseClassInstance().initializeCallback(this);
 
+        checkFirstTime(context);
+
         initData(context, recyclerView);
     }
 
     public void initData(Context context, RecyclerView recyclerView) {
 
-        savedBills.removeAll(savedBills);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
 
-        recyclerAdapter = new RecyclerAdapter(savedBills, context);
+        bills.add(new BillModel("tesint", false));
+
+        Gson gson = new Gson();
+
+        String json = sharedPreferences.getString("bills", "");
+
+        Type type = new TypeToken<ArrayList<BillModel>>(){}.getType();
+//        bills = gson.fromJson(json, type); the problem is here
+
+        recyclerAdapter = new RecyclerAdapter(bills, context);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerAdapter);
-
     }
 
     @Override
@@ -78,7 +95,11 @@ public class MainActivityPresenter implements NotificationCallback {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
+                        BillModel bill = new BillModel(userInput.getText().toString(), false);
 
+                        bills.add(bill);
+
+                        saveBills(context);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -91,5 +112,39 @@ public class MainActivityPresenter implements NotificationCallback {
 
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
+    }
+
+    public void saveBills(Context context) {
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(bills);
+        editor.putString("bills", json);
+        editor.apply();
+    }
+
+    public void checkFirstTime(Context context) {
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("FirstTime", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        if (sharedPreferences.getBoolean("KeyFirstTime", false)) {
+
+            bills.add(new BillModel("sarradatest", true));
+
+        } else {
+
+            Log.d(TAG, "checkFirstTime: testing this bitch");
+            setFirstTime(false);
+        }
+
+    }
+
+    public void setFirstTime(boolean isFirst) {
+
+        editor.putBoolean("KeyFirstTime", isFirst);
+        editor.apply();
     }
 }

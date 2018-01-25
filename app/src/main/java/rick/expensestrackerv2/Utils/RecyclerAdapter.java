@@ -64,11 +64,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             @Override
             public void onClick(View view) {
 
-                Injection.getFirebaseDatabaseClassInstance().payBill(
-                        bills,
-                        Injection.getDateInstance().getCurrentMonth(),
-                        mContext
-                );
+                bills.setPaid(true);
 
                 holder.iCheckBill.setImageResource(R.drawable.paidbill);
             }
@@ -77,7 +73,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.deleteBill.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                remove(position);
+
+                notifyItemRangeChanged(position, billModel.size());
+                billModel.remove(position);
+                notifyItemRemoved(position);
             }
         });
     }
@@ -106,10 +105,5 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    public void remove(int position) {
-        this.billModel.remove(position);
-        notifyItemRemoved(position);
     }
 }

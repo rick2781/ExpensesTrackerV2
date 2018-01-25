@@ -47,4 +47,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.saveBills(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.saveBills(this);
+    }
 }
