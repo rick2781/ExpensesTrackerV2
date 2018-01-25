@@ -32,6 +32,7 @@ public class MainActivityPresenter implements NotificationCallback {
     static RecyclerAdapter recyclerAdapter;
 
     SharedPreferences.Editor editor;
+    SharedPreferences sharedPreferences;
 
     ArrayList<BillModel> bills = new ArrayList<>();
 
@@ -49,7 +50,7 @@ public class MainActivityPresenter implements NotificationCallback {
 
     public void initData(Context context, RecyclerView recyclerView) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
 
         Gson gson = new Gson();
 
@@ -114,8 +115,8 @@ public class MainActivityPresenter implements NotificationCallback {
 
     public void saveBills(Context context) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         Gson gson = new Gson();
         String json = gson.toJson(bills);
@@ -125,7 +126,7 @@ public class MainActivityPresenter implements NotificationCallback {
 
     public void checkFirstTime(Context context) {
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences("FirstTime", Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences("FirstTime", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
         boolean firstRun = sharedPreferences.getBoolean("firstRun", true);
@@ -137,5 +138,24 @@ public class MainActivityPresenter implements NotificationCallback {
 
             editor.putBoolean("firstRun", false).apply();
         }
+    }
+
+    public void resetBillsNewMonth(Context context) {
+
+//        if (Injection.getDateInstance().checkMonth()) {
+
+            for (BillModel bills : bills) {
+
+                bills.setPaid(false);
+            }
+//        }
+
+        sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(bills);
+        editor.putString("bills", json);
+        editor.apply();
     }
 }
