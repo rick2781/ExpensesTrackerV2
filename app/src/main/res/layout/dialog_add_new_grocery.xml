@@ -10,14 +10,16 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Insert New Bill : "
+        android:text="Insert New Grocery Value : "
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <EditText
         android:id="@+id/editTextDialogUserInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10">
+        android:ems="12"
+        android:text=""
+        android:inputType="number">
 
         <requestFocus />
     </EditText>

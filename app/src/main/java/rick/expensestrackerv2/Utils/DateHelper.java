@@ -1,6 +1,7 @@
 package rick.expensestrackerv2.Utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -9,6 +10,8 @@ import java.util.Calendar;
  */
 
 public class DateHelper {
+
+    private static final String TAG = "DateHelper";
 
     static DateHelper INSTANCE;
 
