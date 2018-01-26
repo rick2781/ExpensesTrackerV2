@@ -82,7 +82,10 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="17dp"
-            android:src="@drawable/ic_add_grocery" />
+            android:src="@drawable/ic_action_name"
+            android:background="@drawable/bg_circle_filled"
+            android:scaleType="center"
+            app:fabSize="auto"/>
 
     </RelativeLayout>
 
@@ -104,14 +107,17 @@
             android:textColor="@color/colorText"
             android:textSize="15sp" />
 
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/addBill"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_above="@+id/textView2"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_circle_filled" />
+            android:background="@drawable/bg_circle_filled"
+            android:src="@drawable/ic_add_expense"
+            app:fabSize="normal"
+            android:scaleType="center"/>
     </RelativeLayout>
 
 </RelativeLayout>

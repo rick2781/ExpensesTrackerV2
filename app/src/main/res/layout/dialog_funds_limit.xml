@@ -10,17 +10,17 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Insert New Grocery Value : "
+        android:text="Insert New Funds Limit : "
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <EditText
         android:id="@+id/editTextDialogUserInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="7"
+        android:ems="6"
         android:text=""
         android:inputType="number"
-        android:maxLength="4">
+        android:maxLength="5">
 
         <requestFocus />
     </EditText>

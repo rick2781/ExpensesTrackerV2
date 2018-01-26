@@ -6,17 +6,15 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -123,10 +121,7 @@ public class MainActivityPresenter implements NotificationCallback {
         alertDialog.show();
     }
 
-    public void addNewGrocery(final Context context, final TextView remainingFunds) {
-
-        //TODO add remaining limit
-        //TODO conditional on user input. disable null/empty input
+    public void newRemainingFundsLimit (final Context context, final TextView remainingFunds) {
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 
@@ -144,9 +139,63 @@ public class MainActivityPresenter implements NotificationCallback {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        int currentGroceryValue = Integer.parseInt(userInput.getText().toString());
+                        if (userInput.getText().toString().isEmpty()) {
 
-                        remainingFunds.setText("Remaining Funds: $ " + String.valueOf(400 - groceryPrefs(context, currentGroceryValue)));
+                            Toast.makeText(context, "You need to fill out all empty spaces!", Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            sharedPreferences = context.getSharedPreferences("FundsLimit", Context.MODE_PRIVATE);
+                            editor = sharedPreferences.edit();
+                            editor.putString("fundsLimit", userInput.getText().toString());
+                            editor.apply();
+
+                            remainingFunds.setText("Remaining Funds: $ " + userInput.getText().toString());
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        dialogInterface.dismiss();
+                    }
+                });
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public void addNewGrocery(final Context context, final TextView remainingFunds) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+
+        inflater = LayoutInflater.from(context);
+
+        View customDialogView = inflater.inflate(R.layout.dialog_add_new_grocery, null);
+
+        dialogBuilder.setView(customDialogView);
+
+        final EditText userInput = customDialogView.findViewById(R.id.editTextDialogUserInput);
+
+        dialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        if (userInput.getText().toString().isEmpty()) {
+
+                            Toast.makeText(context, "You need to fill out all empty spaces!", Toast.LENGTH_SHORT).show();
+                        } else {
+
+                            int currentGroceryValue = Integer.parseInt(userInput.getText().toString());
+
+                            sharedPreferences = context.getSharedPreferences("FundsLimit", Context.MODE_PRIVATE);
+
+                            int fundsLimit = Integer.parseInt(sharedPreferences.getString("fundsLimit", ""));
+
+                            remainingFunds.setText("Remaining Funds: $ " + String.valueOf(fundsLimit - groceryPrefs(context, currentGroceryValue)));
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -181,8 +230,10 @@ public class MainActivityPresenter implements NotificationCallback {
 
         if (firstRun) {
 
-            bills.add(new BillModel("testingFirstRun", true));
-            Log.d(TAG, "checkFirstTime: testing this bitch 1");
+            bills.add(new BillModel("Energy", false));
+            bills.add(new BillModel("Internet", false));
+            bills.add(new BillModel("Car", false));
+            bills.add(new BillModel("Rent", false));
 
             editor.putBoolean("firstRun", false).apply();
         }
