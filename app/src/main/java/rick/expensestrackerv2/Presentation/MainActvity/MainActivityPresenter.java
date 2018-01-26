@@ -43,7 +43,7 @@ public class MainActivityPresenter implements NotificationCallback {
 
     ArrayList<BillModel> bills = new ArrayList<>();
 
-    public MainActivityPresenter(RecyclerView recyclerView, Context context) {
+    public MainActivityPresenter(RecyclerView recyclerView, Context context, RecyclerView.ItemDecoration decoration) {
 
         Injection.getFirebaseDatabaseClassInstance().getDatabaseInstance();
         Injection.getFirebaseDatabaseClassInstance().getDatabaseReferenceInstance();
@@ -52,10 +52,10 @@ public class MainActivityPresenter implements NotificationCallback {
 
         checkFirstTime(context);
 
-        initData(context, recyclerView);
+        initData(context, recyclerView, decoration);
     }
 
-    public void initData(Context context, RecyclerView recyclerView) {
+    public void initData(Context context, RecyclerView recyclerView, RecyclerView.ItemDecoration decoration) {
 
         sharedPreferences = context.getSharedPreferences("savedBills", Context.MODE_PRIVATE);
 
@@ -76,6 +76,7 @@ public class MainActivityPresenter implements NotificationCallback {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
 
+        recyclerView.addItemDecoration(decoration);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerAdapter);
     }

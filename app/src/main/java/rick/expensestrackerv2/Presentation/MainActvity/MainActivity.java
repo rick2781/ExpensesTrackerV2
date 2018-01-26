@@ -1,6 +1,7 @@
 package rick.expensestrackerv2.Presentation.MainActvity;
 
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rick.expensestrackerv2.R;
+import rick.expensestrackerv2.Utils.DividerItemDecoration;
 
 //TODO ADD PROGRESS BAR on recyclerview
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        presenter = new MainActivityPresenter(recyclerView, this);
+        RecyclerView.ItemDecoration dividerDecoration = new DividerItemDecoration(
+                ContextCompat.getDrawable(this, R.drawable.bg_rv_separator));
+
+        presenter = new MainActivityPresenter(recyclerView, this, dividerDecoration);
 
         addBill.setOnClickListener(new View.OnClickListener() {
             @Override
