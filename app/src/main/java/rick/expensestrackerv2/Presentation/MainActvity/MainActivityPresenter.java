@@ -125,6 +125,8 @@ public class MainActivityPresenter implements NotificationCallback {
     public void addNewGrocery(final Context context, final TextView remainingFunds) {
 
         //TODO add remaining limit
+        //TODO conditional on user input. disable null/empty input
+
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 
         inflater = LayoutInflater.from(context);
